@@ -37,7 +37,7 @@ def get_path(browser,browser_params):
         browser_params['hist_sql'] = hist_sql
         return browser_params
     elif browser == 'firefox':
-        FIREFOX_PATH = "/Library/Application Support/Firefox/Profiles/tsmorvto.default-release/places.sqlite"
+        FIREFOX_PATH = "/Library/Application Support/Firefox/Profiles/qs6kpgry.default-release/places.sqlite"
         hist_path = USER_PATH + FIREFOX_PATH
         hist_sql = "SELECT datetime(moz_historyvisits.visit_date/1000000,'unixepoch','localtime') AS visit_date, moz_places.url AS url, moz_places.title AS url_title FROM moz_places, moz_historyvisits WHERE moz_places.id = moz_historyvisits.place_id ORDER BY visit_date DESC"
         browser_params['browser_name'] = browser
@@ -62,7 +62,16 @@ def dict_factory(cursor, row):
 def get_browser_hist(browser_params,timestr):
     bn = browser_params['browser_name']
     # connect to the SQlite databases
-    connection = sqlite3.connect(browser_params['hist_path'])
+    print("browser: " + bn)
+    print("hist_path: " + browser_params['hist_path'])
+
+    try:
+        connection = sqlite3.connect(browser_params['hist_path'])
+    except:
+        print("Connection to SQLite: " + bn + " failed!")
+        print("It may not be installed or not closed")
+        return
+
     connection.row_factory = dict_factory
     cursor = connection.cursor()
     try:
